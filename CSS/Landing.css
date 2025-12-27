@@ -1,0 +1,419 @@
+:root {
+    --shadow-light: rgba(255, 255, 255, 0.9);
+    --shadow-dark: rgba(160, 180, 200, 0.45);
+    --accent: #3b82f6;
+    --text: white;
+}
+
+* {
+    box-sizing: border-box
+}
+
+/*Navbar im dark mode*/
+body.dark-mode {
+    --bg: #0f1720;
+    --surface: #0c1116;
+    --shadow-light: rgba(255, 255, 255, 0.05);
+    --shadow-dark: rgba(0, 0, 0, 0.85);
+    --accent: #60a5fa;
+    --text: #e6eef8;
+}
+
+/*Header mit Navleiste*/
+header {
+    background-image: linear-gradient(to left,
+            rgba(64, 64, 64, 0.5),
+            rgba(96, 96, 96, 0.5),
+            rgba(0, 0, 0, 0.5));
+    color: white;
+    height: 120px;
+    margin-top: 5px;
+    align-items: center;
+    padding-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+/*Überschrift mit Cover und Animation*/
+h2 {
+    font-size: 48px;
+    font-weight: bold;
+    background-image: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb");
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 20ch;
+}
+
+
+
+/*Navigation der Links*/
+ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+/* Liste im Button-Stil nebeneinander */
+ul {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    margin: 0;
+    border-radius: 40px;
+    background: var(--surface);
+    box-shadow: 8px 8px 18px var(--shadow-dark),
+        -8px -8px 18px var(--shadow-light);
+}
+
+li {
+    display: flex;
+}
+
+.navlink {
+    color: var(--text);
+    background: var(--surface);
+    padding: 10px 18px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 4px 4px 10px var(--shadow-dark),
+        -4px -4px 10px var(--shadow-light),
+        inset 0 2px 6px rgba(255, 255, 255, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.navlink:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 8px 20px var(--shadow-dark),
+        -6px -6px 18px var(--shadow-light),
+        inset 0 4px 10px rgba(255, 255, 255, 0.25);
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.navlink:active {
+    transform: translateY(0);
+    box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.18),
+        inset -6px -6px 12px rgba(255, 255, 255, 0.03);
+}
+
+a {
+    color: white;
+}
+
+#astro-bot-canvas {
+    position: fixed;
+    bottom: 20px;
+    right: 50px;
+    width: 160px;
+    height: 160px;
+    pointer-events: none;
+    z-index: 20;
+}
+
+body {
+    min-height: 100vh;
+    background-image: url("https://www.mt.de/_em_daten/_cache/image/1xcFg4NGlJWXRjZ2FhVmgzVmJ5T2F2NXVaWTh1TTFWMjFNbERZMHJvWkFNV3B6Rm1OMU1SOTNkNWswSVBLcnFnL3pDOTZ0NlR6L05sZEhqRHZHYjF3dmV6SjNaRDM5YVB6WFR6Um5JZmF5YVE9/250429-1129-533767670.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: black;
+    font-family: sans-serif;
+    transition: background-image 0.3s, background-color 0.3s, color 0.3s;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-image: url("https://4kwallpapers.com/images/walls/thumbs_3t/8710.jpg");
+    color: #f0f0f0;
+}
+
+/*Dark-Mode Flipcard*/
+body.dark-mode .front,
+body.dark-mode .back {
+    box-shadow: 10px 10px 10px 0 gray;
+}
+
+/*Flipcard Container*/
+.card-container {
+    perspective: 1000px;
+    margin: 60px auto;
+    width: fit-content;
+}
+
+.card {
+    position: center;
+    width: 429px;
+    height: 605px;
+    transform-style: preserve-3d;
+    transition: 0.6s;
+    cursor: pointer;
+}
+
+.front,
+.back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    backface-visibility: hidden;
+}
+
+.front {
+    background-image: linear-gradient(#012169, #007BFF);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transform: rotate(0deg);
+    box-shadow: 10px 10px 10px 0 #000;
+}
+
+.back {
+    background-image: linear-gradient(#007BFF, #012169);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transform: rotateY(180deg);
+    box-shadow: 10px 10px 10px 0 #000;
+}
+
+/* =========================
+   Container links
+   ========================= */
+.menu-container {
+    position: absolute;
+    top: 160px;
+    left: 10px;
+    padding: 8px;
+    background: transparent;
+}
+
+/* =========================
+   Details / Button
+   ========================= */
+.menu-item {
+    display: block;
+}
+
+.menu-item>summary {
+    list-style: none;
+    cursor: pointer;
+    width: 140px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 25px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        4px 4px 10px var(--shadow-dark),
+        -4px -4px 10px var(--shadow-light),
+        inset 0 2px 6px rgba(255, 255, 255, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+/* Standard-Pfeil entfernen */
+.menu-item>summary::-webkit-details-marker {
+    display: none;
+}
+
+.menu-item>summary:hover {
+    transform: translateY(-3px);
+    color: var(--accent);
+    box-shadow:
+        6px 8px 20px var(--shadow-dark),
+        -6px -6px 18px var(--shadow-light),
+        inset 0 4px 10px rgba(255, 255, 255, 0.25);
+}
+
+.menu-item>summary:active {
+    transform: translateY(0);
+    box-shadow:
+        inset 6px 6px 12px rgba(0, 0, 0, 0.18),
+        inset -6px -6px 12px rgba(255, 255, 255, 0.03);
+}
+
+/* Aufklapp-Liste */
+.menu-item ul {
+    margin-top: 10px;
+    padding: 10px;
+    list-style: none;
+    background: var(--surface);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+    box-shadow:
+        6px 6px 16px var(--shadow-dark),
+        -6px -6px 16px var(--shadow-light),
+        inset 0 2px 6px rgba(255, 255, 255, 0.25);
+}
+
+.menu-item li {
+    display: block;
+}
+
+/*Flipcard onclick*/
+.card.flipped {
+    transform: rotateY(180deg);
+}
+
+/* =========================
+   Dark Mode Button Text
+   ========================= */
+#darkModeToggle::after {
+    content: 'Dark Mode';
+}
+
+body.dark-mode #darkModeToggle::after {
+    content: 'Light Mode';
+}
+
+/* =========================
+   MOBILE OPTIMIERUNG
+   Zielgröße: 360x740
+   ========================= */
+
+@media (max-width: 768px) {
+
+    /* ---------- Hintergrund: immer sichtbar, kein Weißrand ---------- */
+    html {
+        min-height: 100%;
+        background-image: url("https://4kwallpapers.com/images/walls/thumbs_3t/8710.jpg");
+        background-repeat: repeat-y;
+        background-size: cover;
+        background-position: center top;
+    }
+
+    body {
+        min-height: 100vh;
+        background: transparent;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+        display: grid;
+        text-align: center;
+        padding: 10px;
+        height: auto;
+    }
+
+    h2 {
+        font-size: 28px;
+        width: auto;
+        white-space: normal;
+    }
+
+    /* ---------- Navigation ---------- */
+    ul {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: center;
+        padding: 8px;
+    }
+
+    .navlink {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    #darkModeToggle {
+        margin-left: 0;
+    }
+
+    /* ---------- Zertifikate ÜBER der Card ---------- */
+    .menu-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 15px 0 10px;
+        z-index: 5;
+    }
+
+    .menu-item > summary {
+        width: 160px;
+    }
+
+    .menu-item ul {
+        position: relative;
+        width: 160px;
+        margin-top: 10px;
+    }
+
+    /* ---------- Card exakt zentriert ---------- */
+    .card-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 0 auto 40px;
+        padding: 0;
+    }
+
+    .card {
+        width: 95vw;
+        max-width: 360px;
+        margin: 0 auto;
+        padding: 0.2rem;
+        border-radius: 0.5rem;
+    }
+
+    .card img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        border-radius: 0.3rem;
+        padding: 2px;
+    }
+
+    /* ---------- Bot links unten ---------- */
+    #astro-bot-canvas {
+        position: fixed;
+        left: 8px;
+        right: auto;
+        bottom: 8px;
+        width: 120px;
+        height: 120px;
+        z-index: 20;
+    }
+}
+
+
+/*Keyframe für die Animation*/
+@keyframes typing {
+    from {
+        width: 0ch;
+    }
+
+    to {
+        width: 11ch;
+    }
+}
+
+
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+

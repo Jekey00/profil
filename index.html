@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justyn Kuhne</title>
+    <link rel="stylesheet" href="/Landing Page/CSS/Landing.css">
+
+    <script type="module" src="/Landing Page/JS Bot/astrobot.js"></script>
+
+
+
+</head>
+
+<body>
+    <header>
+        <h2>Kuhne Justyn</h2>
+        <nav>
+            <ul>
+                <li><a class="navlink" id="darkModeToggle"></a></li>
+                <li><a class="navlink" href="/Landing Page/assets/Lebenslauf_09_25.pdf">Lebenslauf</a></li>
+                <li><a class="navlink" href="https://www.linkedin.com/in/justyn-kuhne-29a959225/"
+                        target="_blank">LinkedIn</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <canvas id="astro-bot-canvas" style="width:160px; height:160px;"></canvas>
+
+    <div class="card-container">
+        <div class="card" id="flipcard">
+            <div class="front">
+                <img src="/Landing Page/assets/Lebenslauf_Front.jpg" alt="Lebenslauf_Front" height="700px"
+                    width="524px">
+            </div>
+            <div class="back">
+                <img src="/Landing Page/assets/Lebenslauf_Back.jpg" alt="Lebenslauf_Back" height="700px" width="524px">
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-container">
+        <details class="menu-item">
+            <summary class="soft-btn menu-summary">
+                Zertifikate
+                <span class="arrow"></span>
+            </summary>
+            <ul class="menu-list">
+                <li>
+                    <div data-iframe-width="120" data-iframe-height="140"
+                        data-share-badge-id="41356746-3ab9-4751-beee-c3ee035d8cb3"
+                        data-share-badge-host="https://www.credly.com"></div>
+                </li>
+                <li>
+                    <div data-iframe-width="120" data-iframe-height="140"
+                        data-share-badge-id="3ce1f7be-149d-47fc-bed0-56b1ab1dc0f8"
+                        data-share-badge-host="https://www.credly.com"></div>
+                </li>
+                <li>
+                    <div data-iframe-width="120" data-iframe-height="140"
+                        data-share-badge-id="36d8c4aa-7c24-4b44-a896-ead4eb63c260"
+                        data-share-badge-host="https://www.credly.com"></div>
+                </li>
+            </ul>
+        </details>
+    </div>
+
+    <script async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+    <div>
+        <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+        <script type="module">
+            import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+            createChat({
+                webhookUrl: 'https://dessie-glossiest-desiredly.ngrok-free.dev/webhook/ecd08f35-6580-40c6-8f88-a18766819dee/chat'
+            });
+
+
+            document.addEventListener("input", e => {
+                if (e.target.tagName === "TEXTAREA" && window.botState) {
+                    window.botState("thinking");
+                }
+            });
+        </script>
+    </div>
+    
+
+    <!--Scipt für den Dark-Mode-->
+    <script>
+        const a = document.getElementById("darkModeToggle");
+        a.addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+        });
+    </script>
+
+    <!--Script für die Flipcard-->
+    <script>
+        const card = document.getElementById("flipcard");
+
+        card.addEventListener("click", function () {
+            card.classList.toggle("flipped");
+        });
+    </script>
+</body>
+
+</html>
