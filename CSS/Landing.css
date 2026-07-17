@@ -134,7 +134,7 @@ body {
 
 /* Dark Mode */
 body.dark-mode {
-    background-image: wallpaper_dark-blue_1280x720.jpg;
+    background-image: CSS/wallpaper_dark-blue_1280x720.jpg;
     color: #f0f0f0;
 }
 
