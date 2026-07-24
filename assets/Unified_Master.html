@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Master Hub - Justyn Kuhne</title>
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=114494&format=png&color=000000" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-main: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f35;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: rgba(148, 163, 184, 0.1);
+            --glow: rgba(99, 102, 241, 0.4);
+        }
+
+        body.light-mode {
+            --bg-main: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: rgba(15, 23, 42, 0.1);
+            --glow: rgba(99, 102, 241, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: var(--bg-main);
+        }
+
+        .bg-gradient::before,
+        .bg-gradient::after {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-gradient::before {
+            background: var(--primary);
+            top: -200px;
+            right: -200px;
+        }
+
+        .bg-gradient::after {
+            background: var(--accent);
+            bottom: -200px;
+            left: -200px;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 14, 26, 0.7);
+            border-bottom: 1px solid var(--border);
+        }
+
+        body.light-mode header {
+            background: rgba(248, 250, 252, 0.7);
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            padding: 0.75rem 1.25rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-light);
+            background: var(--bg-card);
+        }
+
+        .theme-toggle {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 100px;
+            padding: 0 3rem 6rem;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Hero & Search */
+        .hero {
+            padding: 4rem 0 2rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .search-wrapper {
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+
+        .search-box {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--glow);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Profile & Flipcard Section */
+        .profile-section {
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            width: 320px;
+            height: 450px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        .front img, .back img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-text {
+            flex: 1;
+            min-width: 300px;
+            max-width: 600px;
+        }
+
+        /* Sections */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+            border-radius: 10px;
+        }
+
+        /* Grids */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Spotify & Credly Section */
+        .integration-section {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .spotify-container {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .credly-container {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .badge-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            justify-items: center;
+            margin-top: 1.5rem;
+        }
+
+        /* AstroBot Canvas */
+        #astro-bot-canvas {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 1.5rem 0;
+            margin-top: 4rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .marquee {
+            white-space: nowrap;
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .marquee a {
+            color: var(--primary-light);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container { padding: 1rem; }
+            nav ul { display: none; }
+            main { padding: 0 1.5rem 4rem; }
+            .integration-section { grid-template-columns: 1fr; }
+            .profile-section { gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">The Hub</div>
+            <nav>
+                <ul>
+                    <li><a href="#projekte" class="nav-link">Projekte</a></li>
+                    <li><a href="#tools" class="nav-link">Tools</a></li>
+                    <li><a href="#ressourcen" class="nav-link">Ressourcen</a></li>
+                    <li><a href="assets/Justyn_Kuhne_FP.pdf" class="nav-link">Lebenslauf</a></li>
+                </ul>
+            </nav>
+            <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="hero-title">Justyn Kuhne</h1>
+            <p class="hero-subtitle">Fachinformatiker & Web-Entwickler</p>
+        </section>
+
+        <div class="search-wrapper">
+            <form action="https://www.google.com/search" method="GET" target="_blank">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" name="q" placeholder="Google-Suche..." class="search-input">
+                    <button type="submit" class="search-btn">Suchen</button>
+                </div>
+            </form>
+        </div>
+
+        <section class="profile-section">
+            <div class="card-container">
+                <div class="card" id="flipcard">
+                    <div class="front">
+                        <img src="assets/Lebenslauf_Front.png" alt="Profil Vorne">
+                    </div>
+                    <div class="back">
+                        <img src="assets/Lebenslauf_Back.png" alt="Profil Hinten">
+                    </div>
+                </div>
+            </div>
+            <div class="profile-text">
+                <h2 class="section-title">Über mich</h2>
+                <p>Willkommen in meinem digitalen Workspace. Hier vereine ich meine Projekte, Tools und Zertifikate an einem zentralen Ort.</p>
+                <br>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="https://www.linkedin.com/in/justyn-kuhne-29a959225/" target="_blank" class="nav-link" style="background: var(--bg-card); border: 1px solid var(--border);">LinkedIn</a>
+                    <a href="https://www.instagram.com/j_sam.k/" target="_blank" class="nav-link" style="background: var(--bg-card); border: 1px solid var(--border);">Instagram</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="projekte">
+            <h2 class="section-title">Projekte</h2>
+            <div class="grid">
+                <div class="glass-card">
+                    <span class="card-icon">🚀</span>
+                    <h3>E-Commerce Platform</h3>
+                    <p>Vollständige E-Commerce-Lösung mit React und Node.js.</p>
+                </div>
+                <div class="glass-card">
+                    <span class="card-icon">🤖</span>
+                    <h3>AI Chat Assistant</h3>
+                    <p>KI-gestützter Chatbot mit natürlicher Sprachverarbeitung.</p>
+                </div>
+                <a href="IT-Sicherheit.html" class="glass-card">
+                    <span class="card-icon">🔐</span>
+                    <h3>IT-Sicherheit</h3>
+                    <p>Spezialfokus auf Cybersicherheit und Bedrohungsschutz.</p>
+                </a>
+            </div>
+        </section>
+
+        <section id="tools">
+            <h2 class="section-title">Tools & Quicklinks</h2>
+            <div class="grid">
+                <a href="https://stackoverflow.com/questions" target="_blank" class="glass-card">
+                    <span class="card-icon">💡</span>
+                    <h3>Stack Overflow</h3>
+                    <p>Community-basierte Q&A Plattform.</p>
+                </a>
+                <a href="https://chatgpt.com/" target="_blank" class="glass-card">
+                    <span class="card-icon">🤖</span>
+                    <h3>ChatGPT</h3>
+                    <p>KI-Assistent für Code und Content.</p>
+                </a>
+                <a href="https://app.diagrams.net/" target="_blank" class="glass-card">
+                    <span class="card-icon">📊</span>
+                    <h3>SQL-Draw</h3>
+                    <p>Datenbankdesign und Flowcharts.</p>
+                </a>
+            </div>
+        </section>
+
+        <section class="integration-section">
+            <div class="spotify-container">
+                <h2 class="section-title">Soundtrack</h2>
+                <iframe src="https://open.spotify.com/embed/playlist/2q9FM7vWb8PcHwcaIueNQR?utm_source=generator" 
+                        width="100%" height="352" frameborder="0" allowfullscreen="" 
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <div class="credly-container">
+                <h2 class="section-title">Zertifikate</h2>
+                <ul class="badge-list">
+                    <li>
+                        <div data-iframe-width="120" data-iframe-height="140"
+                            data-share-badge-id="41356746-3ab9-4751-beee-c3ee035d8cb3"
+                            data-share-badge-host="https://www.credly.com"></div>
+                    </li>
+                    <li>
+                        <div data-iframe-width="120" data-iframe-height="140"
+                            data-share-badge-id="3ce1f7be-149d-47fc-bed0-56b1ab1dc0f8"
+                            data-share-badge-host="https://www.credly.com"></div>
+                    </li>
+                    <li>
+                        <div data-iframe-width="120" data-iframe-height="140"
+                            data-share-badge-id="36d8c4aa-7c24-4b44-a896-ead4eb63c260"
+                            data-share-badge-host="https://www.credly.com"></div>
+                    </li>
+                </ul>
+                <script async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+            </div>
+        </section>
+    </main>
+
+    <canvas id="astro-bot-canvas" width="160" height="160"></canvas>
+
+    <footer>
+        <div class="marquee">
+            Ständige Updates und mehr &copy; 2025 | Webdesign by Justyn Kuhne | Folge mir auf 
+            <a href="https://www.instagram.com/j_sam.k/" target="_blank">Instagram</a> | 
+            Besuche mein <a href="https://www.linkedin.com/in/justyn-kuhne-29a959225/" target="_blank">LinkedIn</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="JS Bot/astroBot.js"></script>
+    
+    <!-- n8n Chat Integration -->
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+        createChat({
+            webhookUrl: 'https://dessie-glossiest-desiredly.ngrok-free.dev/webhook/ecd08f35-6580-40c6-8f88-a18766819dee/chat'
+        });
+    </script>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) {
+                themeToggle.innerHTML = '☀️ Light';
+            } else {
+                themeToggle.innerHTML = '🌙 Dark';
+            }
+        });
+
+        // Flipcard logic
+        const card = document.getElementById('flipcard');
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+
+        // Search clear icon logic (optional enhancement)
+        const input = document.querySelector('.search-input');
+        input.addEventListener('input', e => {
+            // Logic can be added here if needed
+        });
+    </script>
+</body>
+</html>
