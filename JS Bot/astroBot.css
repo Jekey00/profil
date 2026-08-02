@@ -1,7 +1,7 @@
 /* ==========================================================================
    Astro Bot – CSS/HTML avatar (kein WebGL, kein Three.js mehr nötig)
    Zustände werden per Klasse am Root-Element gesteuert:
-   .is-idle (Standard) | .is-thinking | .is-talking
+   .is-idle (Standard) | .is-thinking | .is-talking | .is-error (rot) | .is-happy (grün)
    ========================================================================== */
 
 :root {
@@ -11,6 +11,8 @@
   --bot-visor-sheen: #2a3138;
   --bot-cyan: #4fdfff;
   --bot-cyan-soft: rgba(79, 223, 255, 0.35);
+  --bot-red: #ff4f4f;
+  --bot-green: #4fff88;
   --bot-joint: #14181c;
   --bot-size: 96px;
 }
@@ -103,6 +105,34 @@
   animation: bot-chest-pulse 0.5s ease-in-out infinite;
 }
 
+/* Fehler / kein Termin frei - Brustlicht rot */
+.astro-bot.is-error .astro-bot__chest-light {
+  background: var(--bot-red);
+  box-shadow: 0 0 8px 2px var(--bot-red);
+  animation: bot-chest-pulse 0.6s ease-in-out 3;
+}
+
+.astro-bot.is-error .astro-bot__glow {
+  background: radial-gradient(circle, rgba(255, 79, 79, 0.4) 0%, transparent 70%);
+  opacity: 0.8;
+}
+
+/* Termin erfolgreich gebucht - Brustlicht grün */
+.astro-bot.is-happy .astro-bot__chest-light {
+  background: var(--bot-green);
+  box-shadow: 0 0 8px 2px var(--bot-green);
+  animation: bot-chest-pulse 0.6s ease-in-out 3;
+}
+
+.astro-bot.is-happy .astro-bot__glow {
+  background: radial-gradient(circle, rgba(79, 255, 136, 0.4) 0%, transparent 70%);
+  opacity: 0.8;
+}
+
+.astro-bot.is-happy {
+  animation: bot-float 3.2s ease-in-out infinite, bot-bounce 0.5s ease-in-out 1;
+}
+
 /* Arme (einfache Kapseln, dezent) */
 .astro-bot__arm {
   position: absolute;
@@ -191,6 +221,12 @@
 @keyframes bot-chest-pulse {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 1; }
+}
+
+@keyframes bot-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-14%) scale(1.06); }
+  60% { transform: translateY(2%) scale(0.98); }
 }
 
 @keyframes bot-eye-glow {
