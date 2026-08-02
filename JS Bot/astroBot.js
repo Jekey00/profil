@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setBotState(state) {
         const normalized = state.startsWith("is-") ? state : `is-${state}`;
-        bot.classList.remove("is-idle", "is-thinking", "is-talking");
+        bot.classList.remove("is-idle", "is-thinking", "is-talking", "is-error", "is-happy");
         bot.classList.add(normalized);
     }
 
@@ -49,6 +49,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // kleinere Versionsunterschiede nichts kaputt machen.
     const chatRoot = document.getElementById("n8n-chat-container");
 
+    // Schlüsselwörter, die im Bot-Text nach Erfolg/Fehler suchen.
+    // Bei Bedarf anpassen/erweitern, falls der System-Prompt andere Formulierungen nutzt.
+    const ERROR_PATTERNS = /kein termin frei|fehler|nicht erreichbar|leider (ist |sind )?(kein|keine)|entschuldigung.*(fehler|problem)/i;
+    const SUCCESS_PATTERNS = /termin (wurde |ist )?(erfolgreich )?(gebucht|erstellt|angelegt)|termin bestätigt|ihr termin steht/i;
+
+    function reactToBotMessage(text) {
+        if (!text) {
+            setBotState("is-talking");
+            returnToIdleAfter(2500);
+            return;
+        }
+        if (ERROR_PATTERNS.test(text)) {
+            setBotState("is-error");
+            returnToIdleAfter(4000);
+        } else if (SUCCESS_PATTERNS.test(text)) {
+            setBotState("is-happy");
+            returnToIdleAfter(4000);
+        } else {
+            setBotState("is-talking");
+            returnToIdleAfter(2500);
+        }
+    }
+
     const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             for (const node of mutation.addedNodes) {
@@ -58,8 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (/typing/i.test(cls)) {
                     setBotState("is-thinking");
                 } else if (/bot|assistant/i.test(cls)) {
-                    setBotState("is-talking");
-                    returnToIdleAfter(2500);
+                    reactToBotMessage(node.textContent || node.innerText || "");
                 }
             }
         }
