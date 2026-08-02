@@ -17,8 +17,8 @@
 
 #bot-container {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 62px;
+  bottom: 5px;
   width: var(--bot-size);
   height: var(--bot-size);
   z-index: 9999;
@@ -28,8 +28,8 @@
 
 @media (max-width: 480px) {
   #bot-container {
-    right: 12px;
-    bottom: 12px;
+    right: 50px;
+    bottom: 0px;
   }
 }
 
