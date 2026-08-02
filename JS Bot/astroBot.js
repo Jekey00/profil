@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     outline.material.blending = THREE.AdditiveBlending;
     outline.material.depthWrite = false;
+    outline.renderOrder = -2; // vor allem anderen zeichnen, damit es nichts dahinter verdeckt
     outline.position.y = 1.2;
     bot.add(outline);
 
@@ -93,9 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
             transparent: true,
             opacity: 0.06,
             roughness: 0.4,
-            metalness: 0.1
+            metalness: 0.1,
+            depthWrite: false
         })
     );
+    bubble.renderOrder = -1; // ebenfalls vor Visor/Kopf zeichnen
     bubble.position.y = 1.2;
     bot.add(bubble);
 
