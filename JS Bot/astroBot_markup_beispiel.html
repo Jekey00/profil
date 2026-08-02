@@ -1,0 +1,30 @@
+<!--
+  Beispiel-Markup für den neuen CSS-basierten Astro Bot.
+  Ersetzt dein bisheriges <canvas id="astro-bot-canvas">.
+  Einfach an der passenden Stelle in dein bestehendes Seiten-HTML einfügen
+  und astroBot.css + astroBot_v2.js einbinden.
+-->
+
+<link rel="stylesheet" href="astroBot.css">
+
+<div id="bot-container">
+  <div id="astro-bot" class="astro-bot is-idle">
+    <div class="astro-bot__glow"></div>
+    <div class="astro-bot__arm astro-bot__arm--left"></div>
+    <div class="astro-bot__arm astro-bot__arm--right"></div>
+    <div class="astro-bot__body"></div>
+    <div class="astro-bot__chest-light"></div>
+    <div class="astro-bot__head">
+      <div class="astro-bot__visor">
+        <div class="astro-bot__eye astro-bot__eye--left"></div>
+        <div class="astro-bot__eye astro-bot__eye--right"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bot-chat">
+    <div id="n8n-chat-container"></div>
+  </div>
+</div>
+
+<script type="module" src="astroBot_v2.js"></script>
