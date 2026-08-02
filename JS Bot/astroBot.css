@@ -16,11 +16,21 @@
 }
 
 #bot-container {
-  position: relative;
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
   width: var(--bot-size);
   height: var(--bot-size);
+  z-index: 9999;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 480px) {
+  #bot-container {
+    right: 12px;
+    bottom: 12px;
+  }
 }
 
 .astro-bot {
