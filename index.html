@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Justyn Kuhne</title>
     <link rel="stylesheet" href="CSS/Landing.css">
-
+    <link rel="stylesheet" href="JS Bot/astroBot.css">
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
     <script type="module" src="JS Bot/astroBot.js"></script>
-
-
-
 </head>
-
 <body>
     <header>
         <h2>Kuhne Justyn</h2>
@@ -25,8 +21,26 @@
         </nav>
     </header>
 
+    <!-- Astro Bot: CSS-basierte Version, kein Canvas/WebGL mehr nötig -->
+    <div id="bot-container">
+        <div id="astro-bot" class="astro-bot is-idle">
+            <div class="astro-bot__glow"></div>
+            <div class="astro-bot__arm astro-bot__arm--left"></div>
+            <div class="astro-bot__arm astro-bot__arm--right"></div>
+            <div class="astro-bot__body"></div>
+            <div class="astro-bot__chest-light"></div>
+            <div class="astro-bot__head">
+                <div class="astro-bot__visor">
+                    <div class="astro-bot__eye astro-bot__eye--left"></div>
+                    <div class="astro-bot__eye astro-bot__eye--right"></div>
+                </div>
+            </div>
+        </div>
 
-    <canvas id="astro-bot-canvas" style="width:160px; height:160px;"></canvas>
+        <div id="bot-chat">
+            <div id="n8n-chat-container"></div>
+        </div>
+    </div>
 
     <div class="card-container">
         <div class="card" id="flipcard">
@@ -38,7 +52,6 @@
             </div>
         </div>
     </div>
-
     <div class="menu-container">
         <details class="menu-item">
             <summary class="soft-btn menu-summary">
@@ -64,27 +77,24 @@
             </ul>
         </details>
     </div>
-
     <script async src="//cdn.credly.com/assets/utilities/embed.js"></script>
 
-    <div>
-        <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
-        <script type="module">
-            import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    <!--
+      Der frühere separate n8n-Chat-Init-Block wurde entfernt: astroBot.js
+      (im <head> geladen) initialisiert den Chat bereits eingebettet in
+      #n8n-chat-container. Ein zweiter createChat()-Aufruf hier hätte eine
+      doppelte, schwebende Chat-Bubble zusätzlich zum eingebetteten Chat erzeugt.
 
-            createChat({
-                webhookUrl: 'https://dessie-glossiest-desiredly.ngrok-free.dev/webhook/ecd08f35-6580-40c6-8f88-a18766819dee/chat'
-            });
-
-
-            document.addEventListener("input", e => {
-                if (e.target.tagName === "TEXTAREA" && window.botState) {
-                    window.botState("thinking");
-                }
-            });
-        </script>
-    </div>
-    
+      Der "Besucher tippt"-Hook bleibt erhalten und nutzt jetzt window.botState,
+      das astroBot.js global bereitstellt.
+    -->
+    <script>
+        document.addEventListener("input", e => {
+            if (e.target.tagName === "TEXTAREA" && window.botState) {
+                window.botState("thinking");
+            }
+        });
+    </script>
 
     <!--Scipt für den Dark-Mode-->
     <script>
@@ -93,20 +103,12 @@
             document.body.classList.toggle("dark-mode");
         });
     </script>
-
     <!--Script für die Flipcard-->
     <script>
         const card = document.getElementById("flipcard");
-
         card.addEventListener("click", function () {
             card.classList.toggle("flipped");
         });
     </script>
 </body>
-
-
 </html>
-
-
-
-
