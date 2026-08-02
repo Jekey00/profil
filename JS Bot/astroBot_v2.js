@@ -11,9 +11,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let idleTimeout = null;
 
     function setBotState(state) {
+        const normalized = state.startsWith("is-") ? state : `is-${state}`;
         bot.classList.remove("is-idle", "is-thinking", "is-talking");
-        bot.classList.add(state);
+        bot.classList.add(normalized);
     }
+
+    // Global verfügbar machen, damit andere Skripte auf der Seite (z. B. ein
+    // "Besucher tippt gerade" Hook) den Bot-Zustand direkt ansteuern können:
+    // window.botState("thinking") / window.botState("talking") / window.botState("idle")
+    window.botState = setBotState;
 
     function returnToIdleAfter(ms) {
         clearTimeout(idleTimeout);
