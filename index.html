@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justyn Kuhne</title>
+    <link rel="stylesheet" href="CSS/Landing.css">
+    <link rel="stylesheet" href="JS Bot/astroBot.css">
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <script type="module" src="JS Bot/astroBot.js"></script>
+</head>
+<body>
+    <header>
+        <h2>Kuhne Justyn</h2>
+        <nav>
+            <ul>
+                <li><a class="navlink" id="darkModeToggle"></a></li>
+                <li><a class="navlink" href="assets/Justyn_Kuhne_FP.pdf">Lebenslauf</a></li>
+                <li><a class="navlink" href="https://www.linkedin.com/in/justyn-kuhne-29a959225/" target="_blank">LinkedIn</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Astro Bot: CSS-basierte Version, kein Canvas/WebGL mehr nötig -->
+    <div id="bot-container">
+        <div id="astro-bot" class="astro-bot is-idle">
+            <div class="astro-bot__glow"></div>
+            <div class="astro-bot__arm astro-bot__arm--left"></div>
+            <div class="astro-bot__arm astro-bot__arm--right"></div>
+            <div class="astro-bot__body"></div>
+            <div class="astro-bot__chest-light"></div>
+            <div class="astro-bot__head">
+                <div class="astro-bot__visor">
+                    <div class="astro-bot__eye astro-bot__eye--left"></div>
+                    <div class="astro-bot__eye astro-bot__eye--right"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bot-chat">
+            <div id="n8n-chat-container"></div>
+        </div>
+    </div>
+
+    <div id="emu-root">
+              <style>
+                /* Farben (Hell-Modus Standard, Dunkel über body.dark-mode) */
+                #emu-root { --e-bg: #ffffff; --e-bg2: #f1f5f9; --e-text: #0f172a; --e-border: rgba(15,23,42,.15);
+                  --e-primary: #6366f1; --e-primary-light: #818cf8; --e-secondary: #8b5cf6; }
+                body.dark-mode #emu-root { --e-bg: #1a1f35; --e-bg2: #111827; --e-text: #f8fafc; --e-border: rgba(148,163,184,.25); }
+
+                /* Zentriert in der Mitte des Bildschirms */
+                #emu-root { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                  width: min(760px, 92vw); max-height: calc(100vh - 120px); overflow-y: auto; z-index: 5;
+                  color: var(--e-text); background: var(--e-bg); border: 1px solid var(--e-border);
+                  border-radius: 20px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); box-sizing: border-box; }
+                #emu-root * { box-sizing: border-box; }
+                #emu-root h3 { margin: 0 0 14px; font-size: 1.15rem; }
+                #emu-root .emu-row { display: flex; gap: 12px; flex-wrap: wrap; }
+                #emu-root button { cursor: pointer; border-radius: 10px; padding: 12px 20px;
+                  font-size: 1rem; font-weight: 600; background: var(--e-bg2); color: var(--e-text); border: 1px solid var(--e-border); transition: background .15s, transform .1s; }
+                #emu-root button:hover { background: var(--e-primary-light); color: #fff; }
+                #emu-root button:active { transform: scale(.97); }
+                #emu-root button.emu-primary { background: var(--e-primary); color: #fff; border-color: transparent; }
+                #emu-root button.emu-primary:hover { background: var(--e-secondary); }
+                #emu-root .emu-system { flex: 1 1 180px; padding: 28px 16px; font-size: 1.3rem; }
+                #emu-root .emu-system small { display: block; font-weight: 400; opacity: .7; margin-top: 4px; font-size: .8rem; }
+                #emu-root .emu-games { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+                #emu-root .emu-games button { text-align: left; }
+                #emu-root .emu-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+                #emu-root .emu-bar span { margin-left: auto; opacity: .7; font-size: .9rem; }
+                #emu-root .emu-screen { width: 100%; aspect-ratio: 4 / 3; max-height: 62vh; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; }
+                #emu-root .emu-screen iframe { width: 100%; height: 100%; border: 0; display: block; }
+                #emu-root .emu-msg { margin-top: 10px; font-size: .9rem; opacity: .8; }
+                #emu-root [hidden] { display: none !important; }
+              </style>
+
+              <!-- Schritt 1: Konsole wählen -->
+              <div id="emu-step-system">
+                <h3>Wähle eine Konsole</h3>
+                <div class="emu-row" id="emu-systems"></div>
+              </div>
+
+              <!-- Schritt 2: Spiel wählen -->
+              <div id="emu-step-game" hidden>
+                <div class="emu-bar">
+                  <button id="emu-back-system">← Konsole wechseln</button>
+                </div>
+                <h3 id="emu-game-title">Spiel wählen</h3>
+                <div class="emu-games" id="emu-games"></div>
+              </div>
+
+              <!-- Schritt 3: Emulator -->
+              <div id="emu-step-play" hidden>
+                <div class="emu-bar">
+                  <button id="emu-back-game">← Zurück</button>
+                  <button id="emu-download-sav" class="emu-primary">💾 Spielstand herunterladen</button>
+                  <span id="emu-now-playing"></span>
+                </div>
+                <div class="emu-screen" id="emu-screen"></div>
+                <div class="emu-msg" id="emu-msg"></div>
+              </div>
+
+              <script>
+              (function () {
+                /* ============ KONFIGURATION ============ */
+                var CONFIG = {
+                  // Raw-Basis-URL deines GitHub-Ordners (ohne Slash am Ende):
+                  // https://raw.githubusercontent.com/<USER>/<REPO>/<BRANCH>/<ORDNER>
+                  base: 'https://raw.githubusercontent.com/DEIN-USER/DEIN-REPO/main/roms',
+
+                  // EmulatorJS-Dateien (CDN). Stable-Version:
+                  emulatorData: 'https://cdn.emulatorjs.org/stable/data/',
+
+                  systems: {
+                    snes: {
+                      label: 'SNES', hint: 'Super Nintendo', core: 'snes9x', folder: 'snes',
+                      games: [
+                        // rom = Dateiname im Ordner, sav = optionaler Spielstand (SNES: .srm)
+                        { name: 'Beispiel-Spiel SNES', rom: 'beispiel.sfc', sav: 'beispiel.srm' }
+                      ]
+                    },
+                    gba: {
+                      label: 'GBA', hint: 'Game Boy Advance', core: 'mgba', folder: 'gba',
+                      games: [
+                        { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' }
+                      ]
+                    }
+                  }
+                };
+                /* ======================================= */
+
+                var $ = function (id) { return document.getElementById(id); };
+                var stepSystem = $('emu-step-system'), stepGame = $('emu-step-game'), stepPlay = $('emu-step-play');
+                var currentSystem = null, currentGame = null, frame = null;
+
+                function show(step) {
+                  stepSystem.hidden = step !== 'system';
+                  stepGame.hidden = step !== 'game';
+                  stepPlay.hidden = step !== 'play';
+                }
+
+                function url(sys, file) {
+                  return CONFIG.base + '/' + sys.folder + '/' + encodeURIComponent(file);
+                }
+
+                // --- Konsolen-Buttons ---
+                Object.keys(CONFIG.systems).forEach(function (key) {
+                  var s = CONFIG.systems[key];
+                  var b = document.createElement('button');
+                  b.className = 'emu-system emu-primary';
+                  b.innerHTML = s.label + '<small>' + s.hint + '</small>';
+                  b.onclick = function () { chooseSystem(key); };
+                  $('emu-systems').appendChild(b);
+                });
+
+                function chooseSystem(key) {
+                  currentSystem = CONFIG.systems[key];
+                  $('emu-game-title').textContent = currentSystem.label + ' – Spiel wählen';
+                  var list = $('emu-games');
+                  list.innerHTML = '';
+                  currentSystem.games.forEach(function (g) {
+                    var b = document.createElement('button');
+                    b.textContent = '▶ ' + g.name;
+                    b.onclick = function () { startGame(g); };
+                    list.appendChild(b);
+                  });
+                  show('game');
+                }
+
+                // --- Emulator in iframe starten (sauber isoliert, Wechsel jederzeit möglich) ---
+                function buildDoc(sys, game) {
+                  var romUrl = url(sys, game.rom);
+                  var savUrl = game.sav ? url(sys, game.sav) : '';
+                  var S = 'scr' + 'ipt'; // Tag-Name getrennt, damit der HTML-Parser das Script nicht vorzeitig beendet
+
+                  var setup =
+                    'window.EJS_player="#game";' +
+                    'window.EJS_core=' + JSON.stringify(sys.core) + ';' +
+                    'window.EJS_gameUrl=' + JSON.stringify(romUrl) + ';' +
+                    'window.EJS_gameName=' + JSON.stringify(game.name) + ';' +
+                    'window.EJS_pathtodata=' + JSON.stringify(CONFIG.emulatorData) + ';' +
+                    'window.EJS_startOnLoaded=true;' +
+                    'window.EJS_language="de-DE";' +
+                    'var SAV=' + JSON.stringify(savUrl) + ';' +
+                    // Spielstand von GitHub laden, sobald das Spiel läuft
+                    'window.EJS_onGameStart=function(){' +
+                      'if(!SAV)return;' +
+                      'fetch(SAV).then(function(r){if(!r.ok)throw new Error("kein sav");return r.arrayBuffer();})' +
+                      '.then(function(buf){' +
+                        'var gm=EJS_emulator.gameManager,p=gm.getSaveFilePath(),parts=p.split("/"),cur="";' +
+                        'for(var i=1;i<parts.length-1;i++){cur+="/"+parts[i];try{gm.FS.mkdir(cur);}catch(e){}}' +
+                        'gm.FS.writeFile(p,new Uint8Array(buf));' +
+                        'gm.loadSaveFiles();' +
+                        'try{gm.restart();}catch(e){}' +
+                        'parent.postMessage({emu:"sav-loaded"},"*");' +
+                      '}).catch(function(){parent.postMessage({emu:"sav-missing"},"*");});' +
+                    '};';
+
+                  return '<!doctype html><html><head><meta charset="utf-8">' +
+                    '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#game{width:100%;height:100%}</style>' +
+                    '</head><body><div id="game"></div>' +
+                    '<' + S + '>' + setup + '</' + S + '>' +
+                    '<' + S + ' src="' + CONFIG.emulatorData + 'loader.js"></' + S + '>' +
+                    '</body></html>';
+                }
+
+                function startGame(game) {
+                  currentGame = game;
+                  $('emu-now-playing').textContent = currentSystem.label + ' · ' + game.name;
+                  $('emu-msg').textContent = 'Lade ROM von GitHub …';
+                  $('emu-download-sav').hidden = false;
+                  stopGame();
+                  frame = document.createElement('iframe');
+                  frame.setAttribute('allow', 'autoplay; fullscreen; gamepad');
+                  frame.setAttribute('allowfullscreen', '');
+                  frame.srcdoc = buildDoc(currentSystem, game);
+                  $('emu-screen').appendChild(frame);
+                  show('play');
+                }
+
+                function stopGame() {
+                  if (frame) { frame.srcdoc = ''; frame.remove(); frame = null; }
+                }
+
+                // Rückmeldung aus dem iframe
+                window.addEventListener('message', function (e) {
+                  if (!e.data || !e.data.emu) return;
+                  if (e.data.emu === 'sav-loaded') $('emu-msg').textContent = 'Spielstand von GitHub geladen ✔';
+                  if (e.data.emu === 'sav-missing') $('emu-msg').textContent = 'Kein Spielstand auf GitHub gefunden – neues Spiel.';
+                });
+
+                // Spielstand herunterladen (zum Hochladen ins GitHub-Repo)
+                $('emu-download-sav').onclick = function () {
+                  try {
+                    var gm = frame.contentWindow.EJS_emulator.gameManager;
+                    var data = gm.getSaveFile();
+                    if (!data || !data.length) { $('emu-msg').textContent = 'Noch kein Spielstand vorhanden – erst im Spiel speichern.'; return; }
+                    var name = currentGame.sav || (currentGame.rom.replace(/\.[^.]+$/, '') + '.sav');
+                    var a = document.createElement('a');
+                    a.href = URL.createObjectURL(new Blob([data], { type: 'application/octet-stream' }));
+                    a.download = name;
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                    $('emu-msg').textContent = 'Heruntergeladen: ' + name + ' – lade die Datei in deinen GitHub-Ordner hoch.';
+                  } catch (err) {
+                    $('emu-msg').textContent = 'Spielstand konnte nicht ausgelesen werden.';
+                  }
+                };
+
+                $('emu-back-system').onclick = function () { show('system'); };
+                $('emu-back-game').onclick = function () { stopGame(); show('game'); };
+              })();
+              </script>
+            </div>
+    <div class="menu-container">
+        <details class="menu-item">
+            <summary class="soft-btn menu-summary">
+                Zertifikate
+                <span class="arrow"></span>
+            </summary>
+            <ul class="menu-list">
+                <li>
+                    <div data-iframe-width="120" data-iframe-height="140"
+                        data-share-badge-id="41356746-3ab9-4751-beee-c3ee035d8cb3"
+                        data-share-badge-host="https://www.credly.com"></div>
+                </li>
+                <li>
+                    <div data-iframe-width="120" data-iframe-height="140"
+                        data-share-badge-id="3ce1f7be-149d-47fc-bed0-56b1ab1dc0f8"
+                        data-share-badge-host="https://www.credly.com"></div>
+                </li>
+                <li>
+                    <div data-iframe-width="120" data-iframe-height="140"
+                        data-share-badge-id="36d8c4aa-7c24-4b44-a896-ead4eb63c260"
+                        data-share-badge-host="https://www.credly.com"></div>
+                </li>
+            </ul>
+        </details>
+    </div>
+    <script async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+    <!--
+      Der frühere separate n8n-Chat-Init-Block wurde entfernt: astroBot.js
+      (im <head> geladen) initialisiert den Chat bereits eingebettet in
+      #n8n-chat-container. Ein zweiter createChat()-Aufruf hier hätte eine
+      doppelte, schwebende Chat-Bubble zusätzlich zum eingebetteten Chat erzeugt.
+
+      Der "Besucher tippt"-Hook bleibt erhalten und nutzt jetzt window.botState,
+      das astroBot.js global bereitstellt.
+    -->
+    <script>
+        document.addEventListener("input", e => {
+            if (e.target.tagName === "TEXTAREA" && window.botState) {
+                window.botState("thinking");
+            }
+        });
+    </script>
+
+    <!--Scipt für den Dark-Mode-->
+    <script>
+        const a = document.getElementById("darkModeToggle");
+        a.addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+        });
+    </script>
+</body>
+</html>
