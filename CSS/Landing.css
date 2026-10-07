@@ -144,23 +144,6 @@ body.dark-mode .back {
     box-shadow: 10px 10px 10px 0 gray;
 }
 
-/*Flipcard Container*/
-.card-container {
-    perspective: 1000px;
-    margin: 60px auto;
-    width: fit-content;
-}
-
-.card {
-    position: center;
-    width: 429px;
-    height: 605px;
-    transform-style: preserve-3d;
-    transition: 0.6s;
-    cursor: pointer;
-}
-
-.front,
 .back {
     position: absolute;
     width: 100%;
