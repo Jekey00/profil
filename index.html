@@ -41,224 +41,512 @@
             <div id="n8n-chat-container"></div>
         </div>
     </div>
-
     <div id="emu-root">
-              <style>
-                /* Farben (Hell-Modus Standard, Dunkel über body.dark-mode) */
-                #emu-root { --e-bg: #ffffff; --e-bg2: #f1f5f9; --e-text: #0f172a; --e-border: rgba(15,23,42,.15);
-                  --e-primary: #6366f1; --e-primary-light: #818cf8; --e-secondary: #8b5cf6; }
-                body.dark-mode #emu-root { --e-bg: #1a1f35; --e-bg2: #111827; --e-text: #f8fafc; --e-border: rgba(148,163,184,.25); }
+  <style>
+    /* Farben (Hell-Modus Standard, Dunkel über body.dark-mode) */
+    #emu-root {
+      --e-bg: #ffffff;
+      --e-bg2: #f1f5f9;
+      --e-text: #0f172a;
+      --e-border: rgba(15, 23, 42, 0.15);
+      --e-primary: #6366f1;
+      --e-primary-light: #818cf8;
+      --e-secondary: #8b5cf6;
+    }
 
-                /* Zentriert in der Mitte des Bildschirms */
-                #emu-root { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                  width: min(760px, 92vw); max-height: calc(100vh - 120px); overflow-y: auto; z-index: 5;
-                  color: var(--e-text); background: var(--e-bg); border: 1px solid var(--e-border);
-                  border-radius: 20px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); box-sizing: border-box; }
-                #emu-root * { box-sizing: border-box; }
-                #emu-root h3 { margin: 0 0 14px; font-size: 1.15rem; }
-                #emu-root .emu-row { display: flex; gap: 12px; flex-wrap: wrap; }
-                #emu-root button { cursor: pointer; border-radius: 10px; padding: 12px 20px;
-                  font-size: 1rem; font-weight: 600; background: var(--e-bg2); color: var(--e-text); border: 1px solid var(--e-border); transition: background .15s, transform .1s; }
-                #emu-root button:hover { background: var(--e-primary-light); color: #fff; }
-                #emu-root button:active { transform: scale(.97); }
-                #emu-root button.emu-primary { background: var(--e-primary); color: #fff; border-color: transparent; }
-                #emu-root button.emu-primary:hover { background: var(--e-secondary); }
-                #emu-root .emu-system { flex: 1 1 180px; padding: 28px 16px; font-size: 1.3rem; }
-                #emu-root .emu-system small { display: block; font-weight: 400; opacity: .7; margin-top: 4px; font-size: .8rem; }
-                #emu-root .emu-games { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-                #emu-root .emu-games button { text-align: left; }
-                #emu-root .emu-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-                #emu-root .emu-bar span { margin-left: auto; opacity: .7; font-size: .9rem; }
-                #emu-root .emu-screen { width: 100%; aspect-ratio: 4 / 3; max-height: 62vh; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; }
-                #emu-root .emu-screen iframe { width: 100%; height: 100%; border: 0; display: block; }
-                #emu-root .emu-msg { margin-top: 10px; font-size: .9rem; opacity: .8; }
-                #emu-root [hidden] { display: none !important; }
-              </style>
+    body.dark-mode #emu-root {
+      --e-bg: #1a1f35;
+      --e-bg2: #111827;
+      --e-text: #f8fafc;
+      --e-border: rgba(148, 163, 184, 0.25);
+    }
 
-              <!-- Schritt 1: Konsole wählen -->
-              <div id="emu-step-system">
-                <h3>Wähle eine Konsole</h3>
-                <div class="emu-row" id="emu-systems"></div>
-              </div>
+    /* Zentriert in der Mitte des Bildschirms */
+    #emu-root {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(760px, 92vw);
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      z-index: 5;
+      color: var(--e-text);
+      background: var(--e-bg);
+      border: 1px solid var(--e-border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      box-sizing: border-box;
+    }
 
-              <!-- Schritt 2: Spiel wählen -->
-              <div id="emu-step-game" hidden>
-                <div class="emu-bar">
-                  <button id="emu-back-system">← Konsole wechseln</button>
-                </div>
-                <h3 id="emu-game-title">Spiel wählen</h3>
-                <div class="emu-games" id="emu-games"></div>
-              </div>
+    #emu-root * {
+      box-sizing: border-box;
+    }
 
-              <!-- Schritt 3: Emulator -->
-              <div id="emu-step-play" hidden>
-                <div class="emu-bar">
-                  <button id="emu-back-game">← Zurück</button>
-                  <button id="emu-download-sav" class="emu-primary">💾 Spielstand herunterladen</button>
-                  <span id="emu-now-playing"></span>
-                </div>
-                <div class="emu-screen" id="emu-screen"></div>
-                <div class="emu-msg" id="emu-msg"></div>
-              </div>
+    #emu-root h3 {
+      margin: 0 0 14px;
+      font-size: 1.15rem;
+    }
 
-              <script>
-              (function () {
-                /* ============ KONFIGURATION ============ */
-                var CONFIG = {
-                  // Raw-Basis-URL deines GitHub-Ordners (ohne Slash am Ende):
-                  // https://raw.githubusercontent.com/<USER>/<REPO>/<BRANCH>/<ORDNER>
-                  base: 'https://raw.githubusercontent.com/Jekey00/profil/main/assets',
+    #emu-root .emu-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-                  // EmulatorJS-Dateien (CDN). Stable-Version:
-                  emulatorData: 'https://cdn.emulatorjs.org/stable/data/',
+    #emu-root button {
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--e-bg2);
+      color: var(--e-text);
+      border: 1px solid var(--e-border);
+      transition: background 0.15s, transform 0.1s;
+    }
 
-                  systems: {
-                    snes: {
-                      label: 'SNES', hint: 'Super Nintendo', core: 'snes9x', folder: 'snes',
-                      games: [
-                        // rom = Dateiname im Ordner, sav = optionaler Spielstand (SNES: .srm)
-                        { name: 'Zelda', rom: 'ZELD- LTTP.sfc', sav: 'ZELD- LTTP.srm' },
-                        { name: 'MarioKart', rom: 'SMK.sfc', sav: 'SMK.srm' },
-                        { name: 'MarioWorld', rom: 'SMW.smc', sav: 'SMW.srm' },
-                        { name: 'DonkeyK', rom: 'DKC.smc', sav: 'DKC.srm' }   
-                      ]
-                    },
-                    gba: {
-                      label: 'geht dich nix an', hint: 'Game Boy Advance', core: 'mgba', folder: 'gba',
-                      games: [
-                        { name: 'Tetris GBA', rom: 'Tetris.gba', sav: 'Tetris.sav' },
-                        { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' },
-                        { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' },
-                        { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' }  
-                      ]
-                    }
-                  }
-                };
-                /* ======================================= */
+    #emu-root button:hover {
+      background: var(--e-primary-light);
+      color: #fff;
+    }
 
-                var $ = function (id) { return document.getElementById(id); };
-                var stepSystem = $('emu-step-system'), stepGame = $('emu-step-game'), stepPlay = $('emu-step-play');
-                var currentSystem = null, currentGame = null, frame = null;
+    #emu-root button:active {
+      transform: scale(0.97);
+    }
 
-                function show(step) {
-                  stepSystem.hidden = step !== 'system';
-                  stepGame.hidden = step !== 'game';
-                  stepPlay.hidden = step !== 'play';
-                }
+    #emu-root button.emu-primary {
+      background: var(--e-primary);
+      color: #fff;
+      border-color: transparent;
+    }
 
-                function url(sys, file) {
-                  return CONFIG.base + '/' + sys.folder + '/' + encodeURIComponent(file);
-                }
+    #emu-root button.emu-primary:hover {
+      background: var(--e-secondary);
+    }
 
-                // --- Konsolen-Buttons ---
-                Object.keys(CONFIG.systems).forEach(function (key) {
-                  var s = CONFIG.systems[key];
-                  var b = document.createElement('button');
-                  b.className = 'emu-system emu-primary';
-                  b.innerHTML = s.label + '<small>' + s.hint + '</small>';
-                  b.onclick = function () { chooseSystem(key); };
-                  $('emu-systems').appendChild(b);
-                });
+    #emu-root .emu-system {
+      flex: 1 1 180px;
+      padding: 28px 16px;
+      font-size: 1.3rem;
+    }
 
-                function chooseSystem(key) {
-                  currentSystem = CONFIG.systems[key];
-                  $('emu-game-title').textContent = currentSystem.label + ' – Spiel wählen';
-                  var list = $('emu-games');
-                  list.innerHTML = '';
-                  currentSystem.games.forEach(function (g) {
-                    var b = document.createElement('button');
-                    b.textContent = '▶ ' + g.name;
-                    b.onclick = function () { startGame(g); };
-                    list.appendChild(b);
-                  });
-                  show('game');
-                }
+    #emu-root .emu-system small {
+      display: block;
+      font-weight: 400;
+      opacity: 0.7;
+      margin-top: 4px;
+      font-size: 0.8rem;
+    }
 
-                // --- Emulator in iframe starten (sauber isoliert, Wechsel jederzeit möglich) ---
-                function buildDoc(sys, game) {
-                  var romUrl = url(sys, game.rom);
-                  var savUrl = game.sav ? url(sys, game.sav) : '';
-                  var S = 'scr' + 'ipt'; // Tag-Name getrennt, damit der HTML-Parser das Script nicht vorzeitig beendet
+    #emu-root .emu-games {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
 
-                  var setup =
-                    'window.EJS_player="#game";' +
-                    'window.EJS_core=' + JSON.stringify(sys.core) + ';' +
-                    'window.EJS_gameUrl=' + JSON.stringify(romUrl) + ';' +
-                    'window.EJS_gameName=' + JSON.stringify(game.name) + ';' +
-                    'window.EJS_pathtodata=' + JSON.stringify(CONFIG.emulatorData) + ';' +
-                    'window.EJS_startOnLoaded=true;' +
-                    'window.EJS_language="de-DE";' +
-                    'var SAV=' + JSON.stringify(savUrl) + ';' +
-                    // Spielstand von GitHub laden, sobald das Spiel läuft
-                    'window.EJS_onGameStart=function(){' +
-                      'if(!SAV)return;' +
-                      'fetch(SAV).then(function(r){if(!r.ok)throw new Error("kein sav");return r.arrayBuffer();})' +
-                      '.then(function(buf){' +
-                        'var gm=EJS_emulator.gameManager,p=gm.getSaveFilePath(),parts=p.split("/"),cur="";' +
-                        'for(var i=1;i<parts.length-1;i++){cur+="/"+parts[i];try{gm.FS.mkdir(cur);}catch(e){}}' +
-                        'gm.FS.writeFile(p,new Uint8Array(buf));' +
-                        'gm.loadSaveFiles();' +
-                        'try{gm.restart();}catch(e){}' +
-                        'parent.postMessage({emu:"sav-loaded"},"*");' +
-                      '}).catch(function(){parent.postMessage({emu:"sav-missing"},"*");});' +
-                    '};';
+    #emu-root .emu-games button {
+      text-align: left;
+    }
 
-                  return '<!doctype html><html><head><meta charset="utf-8">' +
-                    '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#game{width:100%;height:100%}</style>' +
-                    '</head><body><div id="game"></div>' +
-                    '<' + S + '>' + setup + '</' + S + '>' +
-                    '<' + S + ' src="' + CONFIG.emulatorData + 'loader.js"></' + S + '>' +
-                    '</body></html>';
-                }
+    #emu-root .emu-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
 
-                function startGame(game) {
-                  currentGame = game;
-                  $('emu-now-playing').textContent = currentSystem.label + ' · ' + game.name;
-                  $('emu-msg').textContent = 'Lade ROM von GitHub …';
-                  $('emu-download-sav').hidden = false;
-                  stopGame();
-                  frame = document.createElement('iframe');
-                  frame.setAttribute('allow', 'autoplay; fullscreen; gamepad');
-                  frame.setAttribute('allowfullscreen', '');
-                  frame.srcdoc = buildDoc(currentSystem, game);
-                  $('emu-screen').appendChild(frame);
-                  show('play');
-                }
+    #emu-root .emu-bar span {
+      margin-left: auto;
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
 
-                function stopGame() {
-                  if (frame) { frame.srcdoc = ''; frame.remove(); frame = null; }
-                }
+    #emu-root .emu-screen {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      max-height: 62vh;
+      margin: 0 auto;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+    }
 
-                // Rückmeldung aus dem iframe
-                window.addEventListener('message', function (e) {
-                  if (!e.data || !e.data.emu) return;
-                  if (e.data.emu === 'sav-loaded') $('emu-msg').textContent = 'Spielstand von GitHub geladen ✔';
-                  if (e.data.emu === 'sav-missing') $('emu-msg').textContent = 'Kein Spielstand auf GitHub gefunden – neues Spiel.';
-                });
+    #emu-root .emu-screen iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
 
-                // Spielstand herunterladen (zum Hochladen ins GitHub-Repo)
-                $('emu-download-sav').onclick = function () {
-                  try {
-                    var gm = frame.contentWindow.EJS_emulator.gameManager;
-                    var data = gm.getSaveFile();
-                    if (!data || !data.length) { $('emu-msg').textContent = 'Noch kein Spielstand vorhanden – erst im Spiel speichern.'; return; }
-                    var name = currentGame.sav || (currentGame.rom.replace(/\.[^.]+$/, '') + '.sav');
-                    var a = document.createElement('a');
-                    a.href = URL.createObjectURL(new Blob([data], { type: 'application/octet-stream' }));
-                    a.download = name;
-                    a.click();
-                    URL.revokeObjectURL(a.href);
-                    $('emu-msg').textContent = 'Heruntergeladen: ' + name + ' – lade die Datei in deinen GitHub-Ordner hoch.';
-                  } catch (err) {
-                    $('emu-msg').textContent = 'Spielstand konnte nicht ausgelesen werden.';
-                  }
-                };
+    #emu-root .emu-msg {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
 
-                $('emu-back-system').onclick = function () { show('system'); };
-                $('emu-back-game').onclick = function () { stopGame(); show('game'); };
-              })();
-              </script>
-            </div>
+    #emu-root [hidden] {
+      display: none !important;
+    }
+  </style>
+
+  <!-- Schritt 1: Konsole wählen -->
+  <div id="emu-step-system">
+    <h3>Wähle eine Konsole</h3>
+    <div class="emu-row" id="emu-systems"></div>
+  </div>
+
+  <!-- Schritt 2: Spiel wählen -->
+  <div id="emu-step-game" hidden>
+    <div class="emu-bar">
+      <button id="emu-back-system">← Konsole wechseln</button>
+    </div>
+
+    <h3 id="emu-game-title">Spiel wählen</h3>
+    <div class="emu-games" id="emu-games"></div>
+  </div>
+
+  <!-- Schritt 3: Emulator -->
+  <div id="emu-step-play" hidden>
+    <div class="emu-bar">
+      <button id="emu-back-game">← Zurück</button>
+      <button id="emu-download-sav" class="emu-primary">
+        💾 Spielstand herunterladen
+      </button>
+      <span id="emu-now-playing"></span>
+    </div>
+
+    <div class="emu-screen" id="emu-screen"></div>
+    <div class="emu-msg" id="emu-msg"></div>
+  </div>
+
+  <script>
+    (function () {
+      /* ============ KONFIGURATION ============ */
+      var CONFIG = {
+        /*
+          Raw-Basis-URL deines GitHub-Ordners, ohne Slash am Ende:
+          https://raw.githubusercontent.com/<USER>/<REPO>/<BRANCH>/<ORDNER>
+        */
+        base: 'https://raw.githubusercontent.com/Jekey00/profil/main/assets',
+
+        /* EmulatorJS-Dateien */
+        emulatorData: 'https://cdn.emulatorjs.org/stable/data/',
+
+        systems: {
+          snes: {
+            label: 'SNES',
+            hint: 'Super Nintendo',
+            core: 'snes9x',
+            folder: 'snes',
+            games: [
+              { name: 'Zelda', rom: 'ZELD- LTTP.sfc', sav: 'ZELD- LTTP.srm' },
+              { name: 'MarioKart', rom: 'SMK.sfc', sav: 'SMK.srm' },
+              { name: 'MarioWorld', rom: 'SMW.smc', sav: 'SMW.srm' },
+              { name: 'DonkeyK', rom: 'DKC.smc', sav: 'DKC.srm' }
+            ]
+          },
+
+          gba: {
+            label: 'geht dich nix an',
+            hint: 'Game Boy Advance',
+            core: 'mgba',
+            folder: 'gba',
+            games: [
+              { name: 'Tetris GBA', rom: 'Tetris.gba', sav: 'Tetris.sav' },
+              { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' },
+              { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' },
+              { name: 'Beispiel-Spiel GBA', rom: 'beispiel.gba', sav: 'beispiel.sav' }
+            ]
+          }
+        }
+      };
+      /* ======================================= */
+
+      var $ = function (id) {
+        return document.getElementById(id);
+      };
+
+      var stepSystem = $('emu-step-system');
+      var stepGame = $('emu-step-game');
+      var stepPlay = $('emu-step-play');
+
+      var currentSystem = null;
+      var currentGame = null;
+      var frame = null;
+
+      function show(step) {
+        stepSystem.hidden = step !== 'system';
+        stepGame.hidden = step !== 'game';
+        stepPlay.hidden = step !== 'play';
+      }
+
+      function url(sys, file) {
+        return CONFIG.base + '/' + sys.folder + '/' + encodeURIComponent(file);
+      }
+
+      /* Konsolen-Buttons erzeugen */
+      Object.keys(CONFIG.systems).forEach(function (key) {
+        var system = CONFIG.systems[key];
+        var button = document.createElement('button');
+        var hint = document.createElement('small');
+
+        button.className = 'emu-system emu-primary';
+        button.appendChild(document.createTextNode(system.label));
+
+        hint.textContent = system.hint;
+        button.appendChild(hint);
+
+        button.onclick = function () {
+          chooseSystem(key);
+        };
+
+        $('emu-systems').appendChild(button);
+      });
+
+      function chooseSystem(key) {
+        currentSystem = CONFIG.systems[key];
+
+        $('emu-game-title').textContent =
+          currentSystem.label + ' – Spiel wählen';
+
+        var list = $('emu-games');
+        list.innerHTML = '';
+
+        currentSystem.games.forEach(function (game) {
+          var button = document.createElement('button');
+
+          button.textContent = '▶ ' + game.name;
+
+          button.onclick = function () {
+            startGame(game);
+          };
+
+          list.appendChild(button);
+        });
+
+        show('game');
+      }
+
+      /*
+        Emulator im iframe starten.
+
+        Die Variable saveAlreadyLoaded verhindert, dass der Spielstand nach
+        einem gm.restart() erneut geladen wird und eine Neustart-Schleife entsteht.
+      */
+      function buildDoc(sys, game) {
+        var romUrl = url(sys, game.rom);
+        var savUrl = game.sav ? url(sys, game.sav) : '';
+        var S = 'scr' + 'ipt';
+
+        var setup =
+          'window.EJS_player="#game";' +
+          'window.EJS_core=' + JSON.stringify(sys.core) + ';' +
+          'window.EJS_gameUrl=' + JSON.stringify(romUrl) + ';' +
+          'window.EJS_gameName=' + JSON.stringify(game.name) + ';' +
+          'window.EJS_pathtodata=' + JSON.stringify(CONFIG.emulatorData) + ';' +
+          'window.EJS_startOnLoaded=true;' +
+          'window.EJS_language="de-DE";' +
+          'var SAV=' + JSON.stringify(savUrl) + ';' +
+          'var saveAlreadyLoaded=false;' +
+
+          'window.EJS_onGameStart=function(){' +
+            /*
+              Ohne konfigurierten Spielstand wird dem Parent trotzdem
+              zurückgemeldet, dass das Spiel erfolgreich gestartet wurde.
+            */
+            'if(!SAV){' +
+              'parent.postMessage({emu:"game-started"},"*");' +
+              'return;' +
+            '}' +
+
+            /*
+              Verhindert mehrfaches Nachladen bei einem durch restart()
+              ausgelösten weiteren GameStart-Ereignis.
+            */
+            'if(saveAlreadyLoaded)return;' +
+            'saveAlreadyLoaded=true;' +
+
+            'fetch(SAV)' +
+              '.then(function(r){' +
+                'if(!r.ok)throw new Error("kein sav");' +
+                'return r.arrayBuffer();' +
+              '})' +
+              '.then(function(buf){' +
+                'var gm=EJS_emulator.gameManager;' +
+                'var p=gm.getSaveFilePath();' +
+                'var parts=p.split("/");' +
+                'var cur="";' +
+
+                /*
+                  Falls erforderlich, werden die Ordner im virtuellen
+                  Dateisystem des Emulators erzeugt.
+                */
+                'for(var i=1;i<parts.length-1;i++){' +
+                  'cur+="/"+parts[i];' +
+                  'try{gm.FS.mkdir(cur);}catch(e){}' +
+                '}' +
+
+                'gm.FS.writeFile(p,new Uint8Array(buf));' +
+                'gm.loadSaveFiles();' +
+
+                /*
+                  Der Neustart sorgt dafür, dass der frisch geladene
+                  Spielstand vom Emulator übernommen wird.
+                */
+                'try{gm.restart();}catch(e){}' +
+
+                'parent.postMessage({emu:"sav-loaded"},"*");' +
+              '})' +
+              '.catch(function(){' +
+                'parent.postMessage({emu:"sav-missing"},"*");' +
+              '});' +
+          '};';
+
+        return (
+          '<!doctype html>' +
+          '<html>' +
+            '<head>' +
+              '<meta charset="utf-8">' +
+              '<style>' +
+                'html,body{margin:0;height:100%;background:#000;overflow:hidden}' +
+                '#game{width:100%;height:100%}' +
+              '</style>' +
+            '</head>' +
+            '<body>' +
+              '<div id="game"></div>' +
+              '<' + S + '>' + setup + '</' + S + '>' +
+              '<' + S + ' src="' + CONFIG.emulatorData + 'loader.js"></' + S + '>' +
+            '</body>' +
+          '</html>'
+        );
+      }
+
+      function startGame(game) {
+        currentGame = game;
+
+        $('emu-now-playing').textContent =
+          currentSystem.label + ' · ' + game.name;
+
+        $('emu-msg').textContent = 'Lade ROM von GitHub …';
+        $('emu-download-sav').hidden = false;
+
+        stopGame();
+
+        frame = document.createElement('iframe');
+        frame.setAttribute('allow', 'autoplay; fullscreen; gamepad');
+        frame.setAttribute('allowfullscreen', '');
+        frame.srcdoc = buildDoc(currentSystem, game);
+
+        $('emu-screen').appendChild(frame);
+
+        show('play');
+      }
+
+      function stopGame() {
+        if (frame) {
+          frame.srcdoc = '';
+          frame.remove();
+          frame = null;
+        }
+      }
+
+      /* Rückmeldungen aus dem iframe */
+      window.addEventListener('message', function (event) {
+        /*
+          Nachrichten nur vom aktuell aktiven iframe annehmen.
+          Das verhindert, dass ein bereits entfernter iframe noch den
+          sichtbaren Statustext verändert.
+        */
+        if (!frame || event.source !== frame.contentWindow) {
+          return;
+        }
+
+        if (!event.data || !event.data.emu) {
+          return;
+        }
+
+        if (event.data.emu === 'game-started') {
+          $('emu-msg').textContent = 'Spiel gestartet ✔';
+        }
+
+        if (event.data.emu === 'sav-loaded') {
+          $('emu-msg').textContent = 'Spielstand von GitHub geladen ✔';
+        }
+
+        if (event.data.emu === 'sav-missing') {
+          $('emu-msg').textContent =
+            'Kein Spielstand auf GitHub gefunden – neues Spiel.';
+        }
+      });
+
+      /* Spielstand herunterladen */
+      $('emu-download-sav').onclick = function () {
+        try {
+          if (!frame || !frame.contentWindow || !currentGame) {
+            $('emu-msg').textContent = 'Es läuft aktuell kein Spiel.';
+            return;
+          }
+
+          var gm = frame.contentWindow.EJS_emulator.gameManager;
+          var data = gm.getSaveFile();
+
+          if (!data || !data.length) {
+            $('emu-msg').textContent =
+              'Noch kein Spielstand vorhanden – erst im Spiel speichern.';
+            return;
+          }
+
+          var name =
+            currentGame.sav ||
+            currentGame.rom.replace(/\.[^.]+$/, '') + '.sav';
+
+          var objectUrl = URL.createObjectURL(
+            new Blob([data], { type: 'application/octet-stream' })
+          );
+
+          var link = document.createElement('a');
+          link.href = objectUrl;
+          link.download = name;
+
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          /*
+            Die URL wird erst verzögert freigegeben. Dadurch funktioniert
+            der Download auch in Browsern, die den Klick nicht sofort abarbeiten.
+          */
+          setTimeout(function () {
+            URL.revokeObjectURL(objectUrl);
+          }, 1000);
+
+          $('emu-msg').textContent =
+            'Heruntergeladen: ' +
+            name +
+            ' – lade die Datei in deinen GitHub-Ordner hoch.';
+        } catch (error) {
+          $('emu-msg').textContent =
+            'Spielstand konnte nicht ausgelesen werden.';
+        }
+      };
+
+      $('emu-back-system').onclick = function () {
+        stopGame();
+        show('system');
+      };
+
+      $('emu-back-game').onclick = function () {
+        stopGame();
+        show('game');
+      };
+    })();
+  </script>
+</div>
+    
     <div class="menu-container">
         <details class="menu-item">
             <summary class="soft-btn menu-summary">
